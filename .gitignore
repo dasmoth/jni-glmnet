@@ -1,0 +1,11 @@
+pom.xml
+*.jar
+lib
+classes
+*~
+#*
+*.o
+*.so
+*.jnilib
+glmnet_GLMNet.h
+bin
