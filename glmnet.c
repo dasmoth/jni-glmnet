@@ -173,7 +173,7 @@ extern void splognet_(
 JNIEXPORT jint JNICALL Java_glmnet_GLMNet_splognet
   (JNIEnv *env, jobject thiz, jdouble alpha, jint nc, jdoubleArray y, jdoubleArray offsets, jdoubleArray xx, jintArray xi, jintArray xp, jintArray mFlags, jdoubleArray penalties, jint maxFinal, jint maxPath, jint numLambdas, jdouble lambdaMinRatio, jdoubleArray userLambdas, jdouble convThreshold, jint standardize, jint maxit, jint kopt, jintArray outNumFits, jdoubleArray outIntercepts, jdoubleArray outCoeffs, jintArray outCoeffPtrs, jintArray outCoeffCnts, jdoubleArray outDev0, jdoubleArray outFdev, jdoubleArray outLambdas, jintArray outNumPasses)
 {
-  jsize yl = (*env)->GetArrayLength(env, y);
+  jsize yl = (*env)->GetArrayLength(env, y) / 2;     // HACK, assume nc=1
   jsize xpl = (*env)->GetArrayLength(env, xp) - 1; 
   jdouble *yv = (*env)->GetDoubleArrayElements(env, y, NULL);
   jdouble *ov = (*env)->GetDoubleArrayElements(env, offsets, NULL);
