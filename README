@@ -1,0 +1,6 @@
+Simple JVM wrapper for glmnet.  See:
+
+         http://www.stanford.edu/~hastie/Papers/glmnet.pdf
+
+Currently just exposes the FORTRAN API.  At some point there will hopefully
+be a more Java-like API (using colt matrices?).
