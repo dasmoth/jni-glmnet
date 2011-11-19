@@ -41,6 +41,14 @@ public class TestSpelnet2 {
 	RegressionLearner r = new RegressionLearner();
 	RegressionModelSet rms = r.learn(new DenseDoubleMatrix1D(y), matrix);
 
+	for (int i = 0; i < 100; ++i) {
+	    System.out.print(i);
+	    RegressionModel m = rms.getModel(i);
+	    for (int rr = 0; rr < rows; ++rr) {
+		System.out.print("\t" + m.estimate(matrix.viewRow(rr)));
+	    }
+	    System.out.println();
+	}
 
     }
 }

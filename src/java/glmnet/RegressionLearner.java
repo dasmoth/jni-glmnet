@@ -100,6 +100,6 @@ public class RegressionLearner {
 	   outNumPasses);
 	
 
-	return new RegressionModelSet(outNumPasses[0], outNumFits[0], outRsq, outIntercepts, outCoeffs, outCoeffPtrs, outCoeffCnts);
+	return new RegressionModelSet(outNumPasses[0], outNumFits[0], outRsq, outIntercepts, outCoeffs, outCoeffPtrs, outCoeffCnts, cols, maxPathFeatures);
     }
 }
