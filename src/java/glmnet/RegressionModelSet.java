@@ -46,6 +46,10 @@ public class RegressionModelSet {
     }
 
     public RegressionModel getModel(int i) {
+	if (i < 0 || i >= numFits) {
+	    throw new IllegalArgumentException(String.format("No model %d, allowed range 0-%d", i, numFits - 1));
+	}
+
 	DoubleMatrix1D weights = new SparseDoubleMatrix1D(columns);
 	for (int j = 0; j < coeffCnts[i]; ++j) {
 	    weights.set(coeffPtrs[j] - 1, coeffs[i*maxPathFeatures + j]);

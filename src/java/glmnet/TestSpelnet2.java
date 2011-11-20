@@ -31,7 +31,7 @@ public class TestSpelnet2 {
 	int cols = xp.length - 1;
 
 	//	double[][] matrix = new double[rows][cols];
-	DoubleMatrix2D matrix = new DenseDoubleMatrix2D(rows, cols);
+	DoubleMatrix2D matrix = new SparseDoubleMatrix2D(rows, cols);
 	for (int c = 0; c < cols; ++c) {
 	    for (int dp = xp[c]; dp < xp[c + 1]; ++dp) {
 		matrix.set(xi[dp-1]-1, c, xx[dp-1]);
@@ -41,7 +41,7 @@ public class TestSpelnet2 {
 	RegressionLearner r = new RegressionLearner();
 	RegressionModelSet rms = r.learn(new DenseDoubleMatrix1D(y), matrix);
 
-	for (int i = 0; i < 100; ++i) {
+	for (int i = 0; i < rms.getNumFits(); ++i) {
 	    System.out.print(i);
 	    RegressionModel m = rms.getModel(i);
 	    for (int rr = 0; rr < rows; ++rr) {

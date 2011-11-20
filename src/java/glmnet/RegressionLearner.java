@@ -52,18 +52,6 @@ public class RegressionLearner {
 	    weights[i] = 1.0;
 	}
 
-	SparseCCDoubleMatrix2D sccd = new SparseCCDoubleMatrix2D(x.rows(), x.columns());
-	sccd.assign(x);
-	int[] xi = sccd.getRowIndexes();
-	for (int i = 0; i < xi.length; ++i) {
-	    xi[i] += 1;
-	}
-	int[] xp = sccd.getColumnPointers();
-	for (int i = 0; i < xp.length; ++i) {
-	    xp[i] += 1;
-	}
-	double[] xx = sccd.getValues();
-
 	DenseDoubleMatrix1D yc = new DenseDoubleMatrix1D(rows);
 	yc.assign(y);
 
@@ -71,34 +59,88 @@ public class RegressionLearner {
 	if (_mlr < 0) {
 	    _mlr = rows < cols ? 0.01 : 0.0001;
 	}
-	
-	int err = new GLMNet().spelnet(
-	   covUpdating,
-	   alpha,
-	   yc.elements(),
-	   weights,
-	   xx,
-	   xi,
-	   xp,
-	   mFlags,
-	   penalties,
-	   maxFinalFeatures,
-	   maxPathFeatures,
-	   numLambdas,
-	   _mlr,
-	   new double[100],
-	   convThreshold,
-	   standardize,
-	   maxIterations,
-	   outNumFits,
-	   outIntercepts,
-	   outCoeffs,
-	   outCoeffPtrs,
-	   outCoeffCnts,
-	   outRsq,
-	   outLambdas,
-	   outNumPasses);
-	
+
+	int err;
+
+	if ((x instanceof SparseDoubleMatrix2D) || 
+	    (x instanceof SparseCCDoubleMatrix2D) ||
+	    (x instanceof SparseRCDoubleMatrix2D))
+	{
+	    System.err.println("Sparse learner");
+	    
+	    SparseCCDoubleMatrix2D sccd = new SparseCCDoubleMatrix2D(x.rows(), x.columns());
+	    sccd.assign(x);
+	    int[] xi = sccd.getRowIndexes();
+	    for (int i = 0; i < xi.length; ++i) {
+		xi[i] += 1;
+	    }
+	    int[] xp = sccd.getColumnPointers();
+	    for (int i = 0; i < xp.length; ++i) {
+		xp[i] += 1;
+	    }
+	    double[] xx = sccd.getValues();
+
+	    err = new GLMNet().spelnet(
+		covUpdating,
+		alpha,
+		yc.elements(),
+		weights,
+		xx,
+		xi,
+		xp,
+		mFlags,
+		penalties,
+		maxFinalFeatures,
+		maxPathFeatures,
+		numLambdas,
+		_mlr,
+		new double[100],
+		convThreshold,
+		standardize,
+		maxIterations,
+		outNumFits,
+		outIntercepts,
+		outCoeffs,
+		outCoeffPtrs,
+		outCoeffCnts,
+		outRsq,
+		outLambdas,
+		outNumPasses);
+	} else {
+	    System.err.println("Dense learner");
+
+	    DenseColumnDoubleMatrix2D dcdm = new DenseColumnDoubleMatrix2D(x.rows(), x.columns());
+	    dcdm.assign(x);
+
+	    err = new GLMNet().elnet(
+		covUpdating,
+		alpha,
+		yc.elements(),
+		weights,
+		dcdm.elements(),
+		mFlags,
+		penalties,
+		maxFinalFeatures,
+		maxPathFeatures,
+		numLambdas,
+		_mlr,
+		new double[100],
+		convThreshold,
+		standardize,
+		maxIterations,
+		outNumFits,
+		outIntercepts,
+		outCoeffs,
+		outCoeffPtrs,
+		outCoeffCnts,
+		outRsq,
+		outLambdas,
+		outNumPasses);
+	}
+
+	if (err != 0) {
+	    throw new LearnerException(err);
+	}
 
 	return new RegressionModelSet(outNumPasses[0], outNumFits[0], outRsq, outIntercepts, outCoeffs, outCoeffPtrs, outCoeffCnts, cols, maxPathFeatures);
     }
