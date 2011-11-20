@@ -73,6 +73,34 @@ c             isd,maxit,lmu,a0,ca,ia,nin,rsq,alm,nlp,jerr)
        double[] outLambdas, 
        int[] outNumPasses);
 
+    public native int lognet(
+       double alpha,
+       int nc,
+       double[] y,
+       double[] offsets,
+       double[] x,
+       int[] mFlags, 
+       double[] penalties, 
+       int maxFinal, 
+       int maxPath, 
+       int numLambdas, 
+       double lambdaMinRatio, 
+       double[] userLambdas, 
+       double convThreshold, 
+       int standardize, 
+       int maxit, 
+       int kopt,
+       int[] outNumFits, 
+       double[] outIntercepts, 
+       double[] outCoeffs, 
+       int[] outCoeffPtrs, 
+       int [] outCoeffCnts, 
+       double[] dev0,
+       double[] fdev,
+       double[] outLambdas, 
+       int[] outNumPasses);
+
+
     /*
 c call splognet (parm,no,ni,nc,x,ix,jx,y,o,jd,vp,ne,nx,nlam,flmin,
 c             ulam,thr,isd,maxit,kopt,lmu,a0,ca,ia,nin,dev0,fdev,alm,nlp,jerr)
