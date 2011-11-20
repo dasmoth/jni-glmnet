@@ -13,7 +13,7 @@ import cern.colt.matrix.tdouble.impl.*;
  */
 
 public class RegressionLearner {
-    private int standardize = 1;
+    private boolean standardize = true;
     private int covUpdating = 2;
     private double alpha = 1.0;
     private double convThreshold = 0.000001;
@@ -21,6 +21,56 @@ public class RegressionLearner {
     private int numLambdas = 100;
     private int maxIterations = 100000;
     
+    public void setStandardize(boolean b) {
+	this.standardize = b;
+    }
+    
+    public boolean getStandardize() {
+	return this.standardize;
+    }
+
+    public void setCovUpdate(int i) {
+	if (i < 1 || i > 2) {
+	    throw new IllegalArgumentException("Covariance update parameter must be 1 or 2");
+	}
+	this.covUpdating = i;
+    }
+
+    public int getCovUpdate() {
+	return this.covUpdating;
+    }
+
+    public void setAlpha(double d) {
+	if (d < 0.0 || d > 1.0) {
+	    throw new IllegalArgumentException(String.format("Bad alpha parameter %g, allowed range 0.0-1.0", d));
+	}
+	this.alpha = d;
+    }
+
+    public double getAlpha() {
+	return this.alpha;
+    }
+
+    public void setConvThreshold(double d) {
+	this.convThreshold = d;
+    }
+
+    public void setNumLambdas(int i) {
+	this.numLambdas = i;
+    }
+
+    public int getNumLambdas() {
+	return this.numLambdas;
+    }
+
+    public void setMaxIterations(int i) {
+	this.maxIterations = i;
+    }
+
+    public int getMaxIterations() {
+	return this.maxIterations;
+    }
+
     public RegressionModelSet learn(DoubleMatrix1D y, DoubleMatrix2D x) {
 	int rows = (int) y.size(); // Matrix1Ds can can be >MAX_INT?  What is the world coming to?
 	int cols = x.columns();
@@ -66,8 +116,6 @@ public class RegressionLearner {
 	    (x instanceof SparseCCDoubleMatrix2D) ||
 	    (x instanceof SparseRCDoubleMatrix2D))
 	{
-	    System.err.println("Sparse learner");
-	    
 	    SparseCCDoubleMatrix2D sccd = new SparseCCDoubleMatrix2D(x.rows(), x.columns());
 	    sccd.assign(x);
 	    int[] xi = sccd.getRowIndexes();
@@ -96,7 +144,7 @@ public class RegressionLearner {
 		_mlr,
 		new double[100],
 		convThreshold,
-		standardize,
+		standardize ? 1 : 0,
 		maxIterations,
 		outNumFits,
 		outIntercepts,
@@ -107,8 +155,6 @@ public class RegressionLearner {
 		outLambdas,
 		outNumPasses);
 	} else {
-	    System.err.println("Dense learner");
-
 	    DenseColumnDoubleMatrix2D dcdm = new DenseColumnDoubleMatrix2D(x.rows(), x.columns());
 	    dcdm.assign(x);
 
@@ -126,7 +172,7 @@ public class RegressionLearner {
 		_mlr,
 		new double[100],
 		convThreshold,
-		standardize,
+		standardize ? 1 : 0,
 		maxIterations,
 		outNumFits,
 		outIntercepts,
