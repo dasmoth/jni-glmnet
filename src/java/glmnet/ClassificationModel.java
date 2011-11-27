@@ -19,6 +19,14 @@ public class ClassificationModel {
 	this.intercept = intercept;
     }
 
+    public DoubleMatrix1D getWeights() {
+	return weights;
+    }
+
+    public double getIntercept() {
+	return intercept;
+    }
+
     public double estimate(DoubleMatrix1D features) {
 	return logit(intercept + weights.zDotProduct(features));
     }

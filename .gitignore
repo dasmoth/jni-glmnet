@@ -9,3 +9,4 @@ classes
 *.jnilib
 glmnet_GLMNet.h
 bin
+.lein-deps-sum
