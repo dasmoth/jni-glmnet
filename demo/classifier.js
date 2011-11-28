@@ -1,6 +1,8 @@
 var canvas;
 var points = [];
+var storedBases;
 var model = null;
+var models = null;
 var gradient = null;
 
 function Point(x, y, label) {
@@ -30,6 +32,8 @@ function init() {
     canvas = document.getElementById('classifier_view');
     var g = canvas.getContext('2d');
 
+    var sparsityWidget = document.getElementById('sparsity');
+
     gradient = makeGradient(100, 'blue', 'white', 'red');
 
     canvas.addEventListener('mousedown', function(ev) {
@@ -50,9 +54,26 @@ function init() {
 
     document.getElementById('classify').addEventListener('mousedown', function(ev) {
 	var bases = [];
+	var clA = 0, clB = 0;
 	for (var pi = 0; pi < points.length; ++pi) {
 	    var p = points[pi];
+	    if (p.label) {
+		++clA;
+	    } else {
+		++clB;
+	    }
 	    bases.push(new RadialBasis(p.x, p.y, 0.01));
+	}
+
+	if (clA == 0 && clB == 0) {
+	    alert('You must enter some points to classify');
+	    return;
+	} else if (clA == 0) {
+	    alert('You must enter some class A points');
+	    return;
+	} else if (clB == 0) {
+	    alert('You must enter some class B points');
+	    return;
 	}
 
 	var x = [], y=[];
@@ -71,9 +92,16 @@ function init() {
 	req.onreadystatechange = function() {
 	    if (req.readyState == 4 && req.status == 200) {
 		// alert(req.responseText);
-		resp = JSON.parse(req.responseText);
-		model = {bases: bases, weights: resp.weights, intercept: resp.intercept};
-		draw();
+		models = JSON.parse(req.responseText);
+		storedBases = bases;
+
+		sparsityWidget.disabled = false;
+		sparsityWidget.min = 0;
+		sparsityWidget.max = models.length - 1;
+		sparsityWidget.value = 20;
+		setModel(20);
+		// model = {bases: bases, weights: resp[10].weights, intercept: resp[10].intercept};
+		// draw();
 	    }
 	};
 	req.send(JSON.stringify({x: x, y: y}));
@@ -82,8 +110,20 @@ function init() {
     document.getElementById('clear').addEventListener('mousedown', function(ev) {
 	model = null;
 	points = [];
+	sparsityWidget.disabled = true;
 	draw();
     }, false);
+
+    var sparsityWidget = document.getElementById('sparsity');
+    sparsityWidget.addEventListener('change', function(ev) {
+	// alert('sparsity = ' + sparsityWidget.value); 
+	setModel(sparsityWidget.value);
+    }, false);
+}
+
+function setModel(i) {
+    model = {bases: storedBases, weights: models[i].weights, intercept: models[i].intercept};
+    draw();
 }
 
 function draw() {

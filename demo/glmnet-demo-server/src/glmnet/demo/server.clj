@@ -6,8 +6,6 @@
 	    [compojure.handler :as handler])
   (:gen-class))
 
-(def server-port 8011)
-
 (defn- glmnet-classify [x y]
   (let [cls (ClassificationLearner.)]
     (.learn cls y x)))
@@ -24,15 +22,16 @@
 
 (defn- post-classify [req]
   (let [{x :x y :y} (read-json (reader (:body req)))]
-    (let [models (glmnet-classify (lol-to-matrix x) (boolean-array y))
-	  model (.getModel models (dec (.getNumFits models)))
-	  wm (.getWeights model)]
+    (let [models (glmnet-classify (lol-to-matrix x) (boolean-array y))]
       ; (println "Passes: " (.getNumPasses models))
       ; (println "Fits: " (.getNumFits models))
       ; (println "Weights: " (for [i (range (.size wm))] (.get wm i)))
       {:status 200
-       :body (json-str {:intercept (.getIntercept model)
-			:weights   (for [i (range (.size wm))] (.get wm i))})})))
+       :body (json-str (for [mi (range (.getNumFits models))
+			     :let [model (.getModel models mi)
+				   wm    (.getWeights model)]]
+			 {:intercept (.getIntercept model)
+			  :weights   (for [i (range (.size wm))] (.get wm i))}))})))
 
 (defroutes glmnet-demo
   (POST "/v1/classify" [] post-classify)
@@ -41,6 +40,8 @@
   (route/not-found "Error!"))
 
 (def app (handler/site glmnet-demo))
+
+; (def server-port 8011)
 
 ; (defn -main []
 ;   (run-jetty glmnet-demo {:port server-port}))
