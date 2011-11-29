@@ -7,4 +7,5 @@
   :dev-dependencies [[lein-ring "0.4.6"]]
   :ring {:handler glmnet.demo.server/app}
   :keep-non-project-classes true
+  :jvm-opts ["-Djava.library.path=."]
   :main glmnet.demo.server)
