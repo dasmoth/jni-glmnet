@@ -34,7 +34,7 @@ function init() {
 
     var sparsityWidget = document.getElementById('sparsity');
 
-    gradient = makeGradient(100, 'blue', 'white', 'red');
+    gradient = makeGradient(500, 'blue', 'white', 'red');
 
     canvas.addEventListener('mousedown', function(ev) {
 	var br = canvas.getBoundingClientRect();
